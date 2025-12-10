@@ -1,4 +1,4 @@
--- =========================================================
+- =========================================================
 -- ELECTRONICS SALES & SERVICE - SEQUENCES + TRIGGERS (direct NEXTVAL assignment)
 -- All triggers now use: v_seq := <seq>.NEXTVAL;
 -- =========================================================
