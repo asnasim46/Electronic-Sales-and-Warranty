@@ -1,0 +1,177 @@
+drop table products;
+drop table suppliers;
+drop table brand;
+drop table sub_categories;
+drop table product_categories;
+
+drop sequence product_categories_seq;
+drop sequence sub_categories_seq;
+drop sequence brand_seq;
+drop sequence suppliers_seq;
+drop sequence products_seq;
+
+
+select * from products;
+select * from suppliers;
+select * from brand;
+select * from sub_categories;
+select * from product_categories;
+
+
+
+
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Networking Devices', 1);
+
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Audio Systems', 1);
+
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Cameras', 1);
+
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Storage Devices', 1);
+
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Gaming Accessories', 1);
+
+
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'Wi-Fi Routers', 1, 1);
+
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'Bluetooth Speakers', 2, 1);
+
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'DSLR Cameras', 3, 1);
+
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'External Hard Drives', 4, 1);
+
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'Gaming Headsets', 5, 1);
+
+
+INSERT INTO brand (brand_id, brand_name, model_name, product_size, color, status)
+VALUES (brand_seq.NEXTVAL, 'TP-Link', 'Archer C6', 'Standard', 'Black', 1);
+
+INSERT INTO brand (brand_id, brand_name, model_name, product_size, color, status)
+VALUES (brand_seq.NEXTVAL, 'JBL', 'Flip 6', 'Portable', 'Black', 1);
+
+INSERT INTO brand (brand_id, brand_name, model_name, product_size, color, status)
+VALUES (brand_seq.NEXTVAL, 'Canon', 'EOS 90D', 'Body Only', 'Black', 1);
+
+INSERT INTO brand (brand_id, brand_name, model_name, product_size, color, status)
+VALUES (brand_seq.NEXTVAL, 'Seagate', 'Backup Plus 2TB', '2TB', 'Black', 1);
+
+INSERT INTO brand (brand_id, brand_name, model_name, product_size, color, status)
+VALUES (brand_seq.NEXTVAL, 'Razer', 'Kraken X', 'Standard', 'Green', 1);
+
+INSERT INTO suppliers (
+    supplier_id, supplier_name, phone_no, email, address,
+    contact_person, cp_phone_no, cp_email, status
+) VALUES (
+    suppliers_seq.NEXTVAL, 'NetWorld Distributors', '+8801700000006', 'sales@networld.com', 'Dhaka, Bangladesh',
+    'Fahim Rahman', '+8801711000006', 'fahim@networld.com', 1
+);
+
+INSERT INTO suppliers (
+    supplier_id, supplier_name, phone_no, email, address,
+    contact_person, cp_phone_no, cp_email, status
+) VALUES (
+    suppliers_seq.NEXTVAL, 'SoundWave BD', '+8801700000007', 'info@soundwave.com', 'Dhaka, Bangladesh',
+    'Lamia Hasan', '+8801711000007', 'lamia@soundwave.com', 1
+);
+
+INSERT INTO suppliers (
+    supplier_id, supplier_name, phone_no, email, address,
+    contact_person, cp_phone_no, cp_email, status
+) VALUES (
+    suppliers_seq.NEXTVAL, 'Camera House', '+8801700000008', 'support@camerahouse.com', 'Chattogram, Bangladesh',
+    'Mahmudul Islam', '+8801711000008', 'mahmud@camerahouse.com', 1
+);
+
+INSERT INTO suppliers (
+    supplier_id, supplier_name, phone_no, email, address,
+    contact_person, cp_phone_no, cp_email, status
+) VALUES (
+    suppliers_seq.NEXTVAL, 'Storage Point', '+8801700000009', 'service@storagepoint.com', 'Dhaka, Bangladesh',
+    'Shamima Sultana', '+8801711000009', 'shamima@storagepoint.com', 1
+);
+
+INSERT INTO suppliers (
+    supplier_id, supplier_name, phone_no, email, address,
+    contact_person, cp_phone_no, cp_email, status
+) VALUES (
+    suppliers_seq.NEXTVAL, 'Gamer Zone Supply', '+8801700000010', 'contact@gamerzone.com', 'Dhaka, Bangladesh',
+    'Rashid Khan', '+8801711000010', 'rashid@gamerzone.com', 1
+);
+
+
+-- TP-Link Archer C6 Router
+INSERT INTO products (
+    product_id, product_code, product_name,
+    supplier_id, category_id, subcategory_id, brand_id,
+    uom, mrp, purchase_price,
+    warranty_24_12, status, status_num
+) VALUES (
+    products_seq.NEXTVAL, 'PRD-0006', 'TP-Link Archer C6 Router',
+    1, 1, 1, 1,          -- NetWorld, Networking Devices, Wi-Fi Routers, TP-Link
+    'PCS', 3500, 3000,
+    '12', 'Active', 1
+);
+
+-- JBL Flip 6 Bluetooth Speaker
+INSERT INTO products (
+    product_id, product_code, product_name,
+    supplier_id, category_id, subcategory_id, brand_id,
+    uom, mrp, purchase_price,
+    warranty_24_12, status, status_num
+) VALUES (
+    products_seq.NEXTVAL, 'PRD-0007', 'JBL Flip 6 Bluetooth Speaker',
+    2, 2, 2, 2,          -- SoundWave BD, Audio Systems, Bluetooth Speakers, JBL
+    'PCS', 12000, 10000,
+    '12', 'Active', 1
+);
+
+-- Canon EOS 90D DSLR Camera
+INSERT INTO products (
+    product_id, product_code, product_name,
+    supplier_id, category_id, subcategory_id, brand_id,
+    uom, mrp, purchase_price,
+    warranty_24_12, status, status_num
+) VALUES (
+    products_seq.NEXTVAL, 'PRD-0008', 'Canon EOS 90D DSLR Camera',
+    3, 3, 3, 3,          -- Camera House, Cameras, DSLR Cameras, Canon
+    'PCS', 150000, 135000,
+    '12', 'Active', 1
+);
+
+-- Seagate Backup Plus 2TB
+INSERT INTO products (
+    product_id, product_code, product_name,
+    supplier_id, category_id, subcategory_id, brand_id,
+    uom, mrp, purchase_price,
+    warranty_24_12, status, status_num
+) VALUES (
+    products_seq.NEXTVAL, 'PRD-0009', 'Seagate Backup Plus 2TB',
+    4, 4, 4, 4,          -- Storage Point, Storage Devices, External Hard Drives, Seagate
+    'PCS', 8000, 6500,
+    '12', 'Active', 1
+);
+
+-- Razer Kraken X Gaming Headset
+INSERT INTO products (
+    product_id, product_code, product_name,
+    supplier_id, category_id, subcategory_id, brand_id,
+    uom, mrp, purchase_price,
+    warranty_24_12, status, status_num
+) VALUES (
+    products_seq.NEXTVAL, 'PRD-0010', 'Razer Kraken X Gaming Headset',
+    5, 5, 5, 5,          -- Gamer Zone Supply, Gaming Accessories, Gaming Headsets, Razer
+    'PCS', 7000, 5500,
+    '12', 'Active', 1
+);
+
+
+
