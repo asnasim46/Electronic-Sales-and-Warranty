@@ -1,0 +1,1347 @@
+-- 1) COMPANY
+CREATE TABLE company (
+    company_id          NUMBER PRIMARY KEY,
+    company_name        VARCHAR2(200) NOT NULL UNIQUE,
+    company_proprietor  VARCHAR2(100),
+    phone_no            VARCHAR2(30) NOT NULL UNIQUE,
+    email               VARCHAR2(150) NOT NULL UNIQUE,
+    address             VARCHAR2(300),
+    website             VARCHAR2(150) UNIQUE,
+    contact_person      VARCHAR2(100),
+    cp_designation      VARCHAR2(100),
+    cp_phone_no         VARCHAR2(30),
+    tag_line            VARCHAR2(300),
+    mission_vision      VARCHAR2(1000),
+    status              NUMBER,
+    cre_by              VARCHAR2(100),
+    cre_dt              DATE,
+    upd_by              VARCHAR2(100),
+    upd_dt              DATE
+);
+
+-- 2) DEPARTMENTS
+CREATE TABLE departments (
+    department_id    NUMBER PRIMARY KEY,
+    department_name  VARCHAR2(100),
+    manager_id       NUMBER,
+    company_id       NUMBER,
+    status           NUMBER,
+    cre_by           VARCHAR2(100),
+    cre_dt           DATE,
+    upd_by           VARCHAR2(100),
+    upd_dt           DATE,
+    CONSTRAINT fk_departments_company
+        FOREIGN KEY (company_id) REFERENCES company(company_id)
+);
+
+-- 3) JOBS
+CREATE TABLE jobs (
+    job_id        VARCHAR2(50) PRIMARY KEY,
+    job_code      VARCHAR2(30),
+    job_title     VARCHAR2(150),
+    job_grade     VARCHAR2(1),
+    min_salary    NUMBER,
+    max_salary    NUMBER,
+    status        NUMBER,
+    cre_by        VARCHAR2(100),
+    cre_dt        DATE,
+    upd_by        VARCHAR2(100),
+    upd_dt        DATE,
+    CONSTRAINT chk_job_grade
+        CHECK (job_grade IN ('A','B','C') OR job_grade IS NULL),
+    CONSTRAINT chk_salary_range
+        CHECK (min_salary IS NULL OR max_salary IS NULL OR min_salary <= max_salary)
+);
+
+-- 4) PARTS_CATEGORY
+CREATE TABLE parts_category (
+    parts_cat_id    NUMBER PRIMARY KEY,
+    parts_cat_name  VARCHAR2(150),
+    status          NUMBER,
+    cre_by          VARCHAR2(100),
+    cre_dt          DATE,
+    upd_by          VARCHAR2(100),
+    upd_dt          DATE
+);
+
+-- 5) PARTS
+CREATE TABLE parts (
+    parts_id       NUMBER PRIMARY KEY,
+    parts_name     VARCHAR2(150),
+    price          NUMBER,
+    parts_cat_id   NUMBER,
+    status         NUMBER,
+    cre_by         VARCHAR2(100),
+    cre_dt         DATE,
+    upd_by         VARCHAR2(100),
+    upd_dt         DATE,
+    CONSTRAINT fk_parts_parts_cat
+        FOREIGN KEY (parts_cat_id) REFERENCES parts_category(parts_cat_id)
+);
+
+-- 6) PRODUCT_CATEGORIES
+CREATE TABLE product_categories (
+    product_cat_id    NUMBER PRIMARY KEY,
+    product_cat_name  VARCHAR2(150),
+    status            NUMBER,
+    cre_by            VARCHAR2(100),
+    cre_dt            DATE,
+    upd_by            VARCHAR2(100),
+    upd_dt            DATE
+);
+
+-- 7) SUB_CATEGORIES
+CREATE TABLE sub_categories (
+    sub_cat_id       NUMBER PRIMARY KEY,
+    sub_cat_name     VARCHAR2(150),
+    product_cat_id   NUMBER,
+    status           NUMBER,
+    cre_by           VARCHAR2(100),
+    cre_dt           DATE,
+    upd_by           VARCHAR2(100),
+    upd_dt           DATE,
+    CONSTRAINT fk_subcat_productcat
+        FOREIGN KEY (product_cat_id) REFERENCES product_categories(product_cat_id)
+);
+
+-- 8) BRAND
+CREATE TABLE brand (
+    brand_id     NUMBER PRIMARY KEY,
+    brand_name   VARCHAR2(150),
+    model_name   VARCHAR2(150),
+    size         VARCHAR2(30),
+    color        VARCHAR2(50),
+    status       NUMBER,
+    cre_by       VARCHAR2(100),
+    cre_dt       DATE,
+    upd_by       VARCHAR2(100),
+    upd_dt       DATE
+);
+
+-- 9) SUPPLIERS
+CREATE TABLE suppliers (
+    supplier_id NUMBER PRIMARY KEY,
+    supplier_name VARCHAR2(150) NOT NULL,
+    phone_no VARCHAR2(30),
+    email VARCHAR2(150),
+    address VARCHAR2(300),
+    contact_person VARCHAR2(100),
+    cp_phone_no VARCHAR2(30),
+    cp_email VARCHAR2(150),
+    purchase_total NUMBER DEFAULT 0,
+    pay_total NUMBER DEFAULT 0,
+    due NUMBER GENERATED ALWAYS AS (NVL(purchase_total,0) - NVL(pay_total,0)) VIRTUAL,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE
+);
+
+-- 10) PRODUCTS
+CREATE TABLE products (
+    product_id        NUMBER PRIMARY KEY,
+    product_code      VARCHAR2(30) UNIQUE,
+    product_name      VARCHAR2(150) NOT NULL,
+    supplier_id       NUMBER,
+    category_id       NUMBER,
+    subcategory_id    NUMBER,
+    brand_id          NUMBER,
+    uom               VARCHAR2(20),
+    mrp               NUMBER,
+    purchase_price    NUMBER,
+    warranty_24_12    VARCHAR2(10),
+    status            VARCHAR2(30),
+    status_num        NUMBER,
+    cre_by            VARCHAR2(100),
+    cre_dt            DATE,
+    upd_by            VARCHAR2(100),
+    upd_dt            DATE,
+    CONSTRAINT fk_products_supplier
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
+    CONSTRAINT fk_products_category
+        FOREIGN KEY (category_id) REFERENCES product_categories(product_cat_id),
+    CONSTRAINT fk_products_subcategory
+        FOREIGN KEY (subcategory_id) REFERENCES sub_categories(sub_cat_id),
+    CONSTRAINT fk_products_brand
+        FOREIGN KEY (brand_id) REFERENCES brand(brand_id)
+);
+-- 11) STOCK
+CREATE TABLE stock (
+    stock_id         NUMBER PRIMARY KEY,
+    product_id       NUMBER,
+    supplier_id      NUMBER,
+    product_cat_id   NUMBER,
+    sub_cat_id       NUMBER,
+    quantity         NUMBER DEFAULT 0,
+    last_update      TIMESTAMP DEFAULT SYSTIMESTAMP,
+    status           NUMBER,
+    cre_by           VARCHAR2(100),
+    cre_dt           DATE,
+    upd_by           VARCHAR2(100),
+    upd_dt           DATE,
+    CONSTRAINT fk_stock_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id),
+    CONSTRAINT fk_stock_supplier
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
+    CONSTRAINT fk_stock_product_cat
+        FOREIGN KEY (product_cat_id) REFERENCES product_categories(product_cat_id),
+    CONSTRAINT fk_stock_sub_cat
+        FOREIGN KEY (sub_cat_id) REFERENCES sub_categories(sub_cat_id)
+);
+
+-- 12) EMPLOYEES
+CREATE TABLE employees (
+    employee_id    NUMBER PRIMARY KEY,
+    first_name     VARCHAR2(50),
+    last_name      VARCHAR2(50),
+    email          VARCHAR2(150),
+    phone_no       VARCHAR2(30),
+    address        VARCHAR2(4000),
+    hire_date      DATE,
+    salary         NUMBER,
+    job_id         VARCHAR2(50),
+    manager_id     NUMBER,
+    department_id  NUMBER,
+    photo          BLOB,
+    status         NUMBER,
+    cre_by         VARCHAR2(100),
+    cre_dt         DATE,
+    upd_by         VARCHAR2(100),
+    upd_dt         DATE,
+    CONSTRAINT fk_employees_job
+        FOREIGN KEY (job_id) REFERENCES jobs(job_id),
+    CONSTRAINT fk_employees_manager
+        FOREIGN KEY (manager_id) REFERENCES employees(employee_id),
+    CONSTRAINT fk_employees_department
+        FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
+
+-- 13) USERS
+CREATE TABLE users (
+    user_id NUMBER PRIMARY KEY,
+    user_name VARCHAR2(100) NOT NULL UNIQUE,
+    password VARCHAR2(200) NOT NULL,
+    role VARCHAR2(50) DEFAULT 'user' NOT NULL,
+    employee_id NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_users_employee
+        FOREIGN KEY (employee_id) REFERENCES employees(employee_id) ON DELETE SET NULL,
+    CONSTRAINT chk_password_len CHECK (LENGTH(password) >= 8)
+);
+
+-- 14) CUSTOMERS
+CREATE TABLE customers (
+    phone_no VARCHAR2(30) PRIMARY KEY,
+    customer_name VARCHAR2(150) NOT NULL,
+    alt_phone_no VARCHAR2(30),
+    email VARCHAR2(150),
+    address VARCHAR2(300),
+    city VARCHAR2(100),
+    rewards VARCHAR2(100),
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE
+);
+-- 15) PAYMENTS
+CREATE TABLE payments (
+    payment_id NUMBER PRIMARY KEY,
+    payment_date DATE NOT NULL,
+    amount NUMBER NOT NULL CHECK (amount > 0),
+    payment_type VARCHAR2(50) NOT NULL,
+    supplier_id NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_payments_supplier
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+);
+
+-- 16) SERVICE_LIST
+CREATE TABLE service_list (
+    servicelist_id NUMBER PRIMARY KEY,
+    service_name VARCHAR2(150) NOT NULL,
+    service_desc VARCHAR2(1000),
+    service_cost NUMBER DEFAULT 0,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE
+);
+
+-- 17) SERVICE_MASTER
+CREATE TABLE service_master (
+    service_id NUMBER PRIMARY KEY,
+    service_date DATE DEFAULT SYSDATE,
+    customer_phone VARCHAR2(30),
+    invoice_id NUMBER,
+    warranty_applicable CHAR(1),
+    servicelist_id NUMBER,
+    service_by NUMBER,
+    service_charge NUMBER DEFAULT 0,
+    parts_price NUMBER DEFAULT 0,
+    total_price NUMBER GENERATED ALWAYS AS (NVL(service_charge,0) + NVL(parts_price,0)) VIRTUAL,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_service_customer
+        FOREIGN KEY (customer_phone) REFERENCES customers(phone_no),
+    CONSTRAINT fk_service_list
+        FOREIGN KEY (servicelist_id) REFERENCES service_list(servicelist_id),
+    CONSTRAINT fk_service_by
+        FOREIGN KEY (service_by) REFERENCES employees(employee_id)
+);
+
+-- 18) SERVICE_DETAILS
+CREATE TABLE service_details (
+    service_det_id NUMBER PRIMARY KEY,
+    service_id NUMBER,
+    parts_id NUMBER,
+    price NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_sd_service
+        FOREIGN KEY (service_id) REFERENCES service_master(service_id),
+    CONSTRAINT fk_sd_parts
+        FOREIGN KEY (parts_id) REFERENCES parts(parts_id)
+);
+
+-- 19) SALES_MASTER
+CREATE TABLE sales_master (
+    invoice_id NUMBER PRIMARY KEY,
+    invoice_date DATE DEFAULT SYSDATE,
+    total_amount NUMBER DEFAULT 0,
+    discount NUMBER DEFAULT 0,
+    adjust_ref NUMBER,
+    adjust_amount NUMBER DEFAULT 0,
+    grand_total NUMBER GENERATED ALWAYS AS (NVL(total_amount,0) - NVL(discount,0) - NVL(adjust_amount,0)) VIRTUAL,
+    payment_type VARCHAR2(50),
+    customer_phone VARCHAR2(30),
+    sales_by NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_sales_customer
+        FOREIGN KEY (customer_phone) REFERENCES customers(phone_no),
+    CONSTRAINT fk_sales_by
+        FOREIGN KEY (sales_by) REFERENCES employees(employee_id)
+);
+
+-- 20) SALES_DETAIL
+CREATE TABLE sales_detail (
+    sales_det_id NUMBER PRIMARY KEY,
+    invoice_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    quantity NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_sd_invoice
+        FOREIGN KEY (invoice_id) REFERENCES sales_master(invoice_id),
+    CONSTRAINT fk_sd_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+-- 21) SALES_RETURN_MASTER
+CREATE TABLE sales_return_master (
+    sales_return_id NUMBER PRIMARY KEY,
+    invoice_id NUMBER,
+    customer_phone VARCHAR2(30),
+    return_date DATE DEFAULT SYSDATE,
+    total_amount NUMBER DEFAULT 0,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_sr_invoice
+        FOREIGN KEY (invoice_id) REFERENCES sales_master(invoice_id),
+    CONSTRAINT fk_sr_customer
+        FOREIGN KEY (customer_phone) REFERENCES customers(phone_no)
+);
+
+-- 22) SALES_RETURN_DETAILS
+CREATE TABLE sales_return_details (
+    sales_return_det_id NUMBER PRIMARY KEY,
+    sales_return_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    qty_return NUMBER,
+    reason VARCHAR2(4000),
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_srd_master
+        FOREIGN KEY (sales_return_id) REFERENCES sales_return_master(sales_return_id),
+    CONSTRAINT fk_srd_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+-- 23) PRODUCT_ORDER_MASTER
+CREATE TABLE product_order_master (
+    order_id NUMBER PRIMARY KEY,
+    supplier_id NUMBER,
+    order_date DATE DEFAULT SYSDATE,
+    expected_delivery_date DATE,
+    total_amount NUMBER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    created_by NUMBER,
+    status NUMBER,
+    CONSTRAINT fk_pom_supplier
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+);
+
+-- 24) PRODUCT_ORDER_DETAIL
+CREATE TABLE product_order_detail (
+    order_detail_id NUMBER PRIMARY KEY,
+    order_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    quantity NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_pod_order
+        FOREIGN KEY (order_id) REFERENCES product_order_master(order_id),
+    CONSTRAINT fk_pod_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+-- 25) PRODUCT_RECEIVE_MASTER
+CREATE TABLE product_receive_master (
+    receive_id NUMBER PRIMARY KEY,
+    invoice_id NUMBER,
+    order_id NUMBER,
+    supplier_id NUMBER,
+    receive_date DATE DEFAULT SYSDATE,
+    total_amount NUMBER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    created_by NUMBER,
+    status NUMBER
+);
+
+-- 26) PRODUCT_RECEIVE_DETAILS
+CREATE TABLE product_receive_details (
+    receive_det_id NUMBER PRIMARY KEY,
+    receive_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    receive_quantity NUMBER,
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_prd_master
+        FOREIGN KEY (receive_id) REFERENCES product_receive_master(receive_id),
+    CONSTRAINT fk_prd_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+-- 27) PRODUCT_RETURN_MASTER
+CREATE TABLE product_return_master (
+    return_id NUMBER PRIMARY KEY,
+    supplier_id NUMBER,
+    return_date DATE DEFAULT SYSDATE,
+    total_amount NUMBER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    created_by NUMBER,
+    status NUMBER
+);
+
+-- 28) PRODUCT_RETURN_DETAILS
+CREATE TABLE product_return_details (
+    return_detail_id NUMBER PRIMARY KEY,
+    return_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    return_quality VARCHAR2(100),
+    reason VARCHAR2(1000),
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_prd2_master
+        FOREIGN KEY (return_id) REFERENCES product_return_master(return_id),
+    CONSTRAINT fk_prd2_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+-- 29) DAMAGE
+CREATE TABLE damage (
+    damage_id NUMBER PRIMARY KEY,
+    damage_date DATE DEFAULT SYSDATE,
+    total_amount NUMBER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    created_by NUMBER,
+    status NUMBER
+);
+
+-- 30) DAMAGE_DETAIL
+CREATE TABLE damage_detail (
+    damage_detail_id NUMBER PRIMARY KEY,
+    damage_id NUMBER,
+    product_id NUMBER,
+    unit_price NUMBER,
+    damage_quantity NUMBER,
+    reason VARCHAR2(1000),
+    status NUMBER,
+    cre_by VARCHAR2(100),
+    cre_dt DATE,
+    upd_by VARCHAR2(100),
+    upd_dt DATE,
+    CONSTRAINT fk_damaged_master
+        FOREIGN KEY (damage_id) REFERENCES damage(damage_id),
+    CONSTRAINT fk_damaged_product
+        FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+-- 1) COMPANY
+CREATE SEQUENCE company_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 2) DEPARTMENTS
+CREATE SEQUENCE departments_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 3) JOBS  (numeric sequence used inside trigger to build VARCHAR2 job_id)
+CREATE SEQUENCE jobs_seq
+    START WITH 1 INCREMENT BY 5
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 4) PARTS_CATEGORY
+CREATE SEQUENCE parts_cat_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 5) PARTS
+CREATE SEQUENCE parts_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 6) PRODUCT_CATEGORIES
+CREATE SEQUENCE product_categories_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 7) SUB_CATEGORIES
+CREATE SEQUENCE sub_categories_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 8) BRAND
+CREATE SEQUENCE brand_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 9) SUPPLIERS
+CREATE SEQUENCE suppliers_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 10) PRODUCTS
+CREATE SEQUENCE products_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 11) STOCK
+CREATE SEQUENCE stock_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 12) EMPLOYEES
+CREATE SEQUENCE employees_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 13) USERS
+CREATE SEQUENCE users_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 14) CUSTOMERS
+-- (PK is phone_no VARCHAR2, no numeric sequence needed; skip.)
+
+-- 15) PAYMENTS
+CREATE SEQUENCE payments_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 16) SERVICE_LIST
+CREATE SEQUENCE service_list_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 17) SERVICE_MASTER
+CREATE SEQUENCE service_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 18) SERVICE_DETAILS
+CREATE SEQUENCE service_details_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 19) SALES_MASTER
+CREATE SEQUENCE sales_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 20) SALES_DETAIL
+CREATE SEQUENCE sales_detail_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 21) SALES_RETURN_MASTER
+CREATE SEQUENCE sales_return_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 22) SALES_RETURN_DETAILS
+CREATE SEQUENCE sales_return_details_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 23) PRODUCT_ORDER_MASTER
+CREATE SEQUENCE product_order_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 24) PRODUCT_ORDER_DETAIL
+CREATE SEQUENCE product_order_detail_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 25) PRODUCT_RECEIVE_MASTER
+CREATE SEQUENCE product_receive_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 26) PRODUCT_RECEIVE_DETAILS
+CREATE SEQUENCE product_receive_details_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 27) PRODUCT_RETURN_MASTER
+CREATE SEQUENCE product_return_master_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 28) PRODUCT_RETURN_DETAILS
+CREATE SEQUENCE product_return_details_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 29) DAMAGE
+CREATE SEQUENCE damage_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+
+-- 30) DAMAGE_DETAIL
+CREATE SEQUENCE damage_detail_seq
+    START WITH 1 INCREMENT BY 1
+    NOMAXVALUE NOMINVALUE
+    CACHE 20 NOCYCLE;
+-- COMPANY
+CREATE OR REPLACE TRIGGER trg_company_bi
+BEFORE INSERT OR UPDATE ON company
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.company_id IS NULL THEN
+            v_seq := company_seq.NEXTVAL;
+            :new.company_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- DEPARTMENTS
+CREATE OR REPLACE TRIGGER trg_departments_bi
+BEFORE INSERT OR UPDATE ON departments
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.department_id IS NULL THEN
+            v_seq := departments_seq.NEXTVAL;
+            :new.department_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- JOBS (job_id built from job_code + sequence)
+CREATE OR REPLACE TRIGGER trg_jobs_bi
+BEFORE INSERT OR UPDATE ON jobs
+FOR EACH ROW
+DECLARE
+    v_seq_val NUMBER;
+    v_code    VARCHAR2(100);
+BEGIN
+    IF INSERTING THEN
+        v_seq_val := jobs_seq.NEXTVAL;
+
+        IF :new.job_code IS NOT NULL THEN
+            v_code := UPPER(TRIM(:new.job_code));
+            :new.job_id := v_code || TO_CHAR(v_seq_val);
+        ELSE
+            :new.job_id := TO_CHAR(v_seq_val);
+        END IF;
+
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PARTS_CATEGORY
+CREATE OR REPLACE TRIGGER trg_parts_category_bi
+BEFORE INSERT OR UPDATE ON parts_category
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.parts_cat_id IS NULL THEN
+            v_seq := parts_cat_seq.NEXTVAL;
+            :new.parts_cat_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PARTS
+CREATE OR REPLACE TRIGGER trg_parts_bi
+BEFORE INSERT OR UPDATE ON parts
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.parts_id IS NULL THEN
+            v_seq := parts_seq.NEXTVAL;
+            :new.parts_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_CATEGORIES
+CREATE OR REPLACE TRIGGER trg_product_categories_bi
+BEFORE INSERT OR UPDATE ON product_categories
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.product_cat_id IS NULL THEN
+            v_seq := product_categories_seq.NEXTVAL;
+            :new.product_cat_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SUB_CATEGORIES
+CREATE OR REPLACE TRIGGER trg_sub_categories_bi
+BEFORE INSERT OR UPDATE ON sub_categories
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.sub_cat_id IS NULL THEN
+            v_seq := sub_categories_seq.NEXTVAL;
+            :new.sub_cat_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- BRAND
+CREATE OR REPLACE TRIGGER trg_brand_bi
+BEFORE INSERT OR UPDATE ON brand
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.brand_id IS NULL THEN
+            v_seq := brand_seq.NEXTVAL;
+            :new.brand_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SUPPLIERS
+CREATE OR REPLACE TRIGGER trg_suppliers_bi
+BEFORE INSERT OR UPDATE ON suppliers
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.supplier_id IS NULL THEN
+            v_seq := suppliers_seq.NEXTVAL;
+            :new.supplier_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PRODUCTS
+CREATE OR REPLACE TRIGGER trg_products_bi
+BEFORE INSERT OR UPDATE ON products
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.product_id IS NULL THEN
+            v_seq := products_seq.NEXTVAL;
+            :new.product_id := v_seq;
+        END IF;
+        IF :new.status_num IS NULL THEN :new.status_num := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- STOCK
+CREATE OR REPLACE TRIGGER trg_stock_bi
+BEFORE INSERT OR UPDATE ON stock
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.stock_id IS NULL THEN
+            v_seq := stock_seq.NEXTVAL;
+            :new.stock_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+-- EMPLOYEES
+CREATE OR REPLACE TRIGGER trg_employees_bi
+BEFORE INSERT OR UPDATE ON employees
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.employee_id IS NULL THEN
+            v_seq := employees_seq.NEXTVAL;
+            :new.employee_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- USERS
+CREATE OR REPLACE TRIGGER trg_users_bi
+BEFORE INSERT OR UPDATE ON users
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.user_id IS NULL THEN
+            v_seq := users_seq.NEXTVAL;
+            :new.user_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- CUSTOMERS (no seq, only audit)
+CREATE OR REPLACE TRIGGER trg_customers_bi
+BEFORE INSERT OR UPDATE ON customers
+FOR EACH ROW
+BEGIN
+    IF INSERTING THEN
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PAYMENTS
+CREATE OR REPLACE TRIGGER trg_payments_bi
+BEFORE INSERT OR UPDATE ON payments
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.payment_id IS NULL THEN
+            v_seq := payments_seq.NEXTVAL;
+            :new.payment_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+-- SERVICE_LIST
+CREATE OR REPLACE TRIGGER trg_service_list_bi
+BEFORE INSERT OR UPDATE ON service_list
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.servicelist_id IS NULL THEN
+            v_seq := service_list_seq.NEXTVAL;
+            :new.servicelist_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SERVICE_MASTER
+CREATE OR REPLACE TRIGGER trg_service_master_bi
+BEFORE INSERT OR UPDATE ON service_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.service_id IS NULL THEN
+            v_seq := service_master_seq.NEXTVAL;
+            :new.service_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SERVICE_DETAILS
+CREATE OR REPLACE TRIGGER trg_service_details_bi
+BEFORE INSERT OR UPDATE ON service_details
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.service_det_id IS NULL THEN
+            v_seq := service_details_seq.NEXTVAL;
+            :new.service_det_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SALES_MASTER
+CREATE OR REPLACE TRIGGER trg_sales_master_bi
+BEFORE INSERT OR UPDATE ON sales_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.invoice_id IS NULL THEN
+            v_seq := sales_master_seq.NEXTVAL;
+            :new.invoice_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SALES_DETAIL
+CREATE OR REPLACE TRIGGER trg_sales_detail_bi
+BEFORE INSERT OR UPDATE ON sales_detail
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.sales_det_id IS NULL THEN
+            v_seq := sales_detail_seq.NEXTVAL;
+            :new.sales_det_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SALES_RETURN_MASTER
+CREATE OR REPLACE TRIGGER trg_sales_return_master_bi
+BEFORE INSERT OR UPDATE ON sales_return_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.sales_return_id IS NULL THEN
+            v_seq := sales_return_master_seq.NEXTVAL;
+            :new.sales_return_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- SALES_RETURN_DETAILS
+CREATE OR REPLACE TRIGGER trg_sales_return_details_bi
+BEFORE INSERT OR UPDATE ON sales_return_details
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.sales_return_det_id IS NULL THEN
+            v_seq := sales_return_details_seq.NEXTVAL;
+            :new.sales_return_det_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+-- PRODUCT_ORDER_MASTER
+CREATE OR REPLACE TRIGGER trg_product_order_master_bi
+BEFORE INSERT OR UPDATE ON product_order_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.order_id IS NULL THEN
+            v_seq := product_order_master_seq.NEXTVAL;
+            :new.order_id := v_seq;
+        END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_ORDER_DETAIL
+CREATE OR REPLACE TRIGGER trg_product_order_detail_bi
+BEFORE INSERT OR UPDATE ON product_order_detail
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.order_detail_id IS NULL THEN
+            v_seq := product_order_detail_seq.NEXTVAL;
+            :new.order_detail_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_RECEIVE_MASTER
+CREATE OR REPLACE TRIGGER trg_product_receive_master_bi
+BEFORE INSERT OR UPDATE ON product_receive_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.receive_id IS NULL THEN
+            v_seq := product_receive_master_seq.NEXTVAL;
+            :new.receive_id := v_seq;
+        END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_RECEIVE_DETAILS
+CREATE OR REPLACE TRIGGER trg_product_receive_details_bi
+BEFORE INSERT OR UPDATE ON product_receive_details
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.receive_det_id IS NULL THEN
+            v_seq := product_receive_details_seq.NEXTVAL;
+            :new.receive_det_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_RETURN_MASTER
+CREATE OR REPLACE TRIGGER trg_product_return_master_bi
+BEFORE INSERT OR UPDATE ON product_return_master
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.return_id IS NULL THEN
+            v_seq := product_return_master_seq.NEXTVAL;
+            :new.return_id := v_seq;
+        END IF;
+    END IF;
+END;
+/
+
+-- PRODUCT_RETURN_DETAILS
+CREATE OR REPLACE TRIGGER trg_product_return_details_bi
+BEFORE INSERT OR UPDATE ON product_return_details
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.return_detail_id IS NULL THEN
+            v_seq := product_return_details_seq.NEXTVAL;
+            :new.return_detail_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+
+-- DAMAGE
+CREATE OR REPLACE TRIGGER trg_damage_bi
+BEFORE INSERT OR UPDATE ON damage
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.damage_id IS NULL THEN
+            v_seq := damage_seq.NEXTVAL;
+            :new.damage_id := v_seq;
+        END IF;
+    END IF;
+END;
+/
+
+-- DAMAGE_DETAIL
+CREATE OR REPLACE TRIGGER trg_damage_detail_bi
+BEFORE INSERT OR UPDATE ON damage_detail
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.damage_detail_id IS NULL THEN
+            v_seq := damage_detail_seq.NEXTVAL;
+            :new.damage_detail_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+END;
+/
+-- Examples (repeat pattern for other FKs)
+CREATE INDEX idx_dept_company      ON departments(company_id);
+CREATE INDEX idx_parts_cat_fk      ON parts(parts_cat_id);
+CREATE INDEX idx_subcat_cat_fk     ON sub_categories(product_cat_id);
+CREATE INDEX idx_prod_supplier_fk  ON products(supplier_id);
+CREATE INDEX idx_prod_cat_fk       ON products(category_id);
+CREATE INDEX idx_prod_subcat_fk    ON products(subcategory_id);
+CREATE INDEX idx_prod_brand_fk     ON products(brand_id);
+CREATE INDEX idx_stock_prod_fk     ON stock(product_id);
+CREATE INDEX idx_emp_job_fk        ON employees(job_id);
+CREATE INDEX idx_emp_dept_fk       ON employees(department_id);
+CREATE INDEX idx_users_emp_fk      ON users(employee_id);
+CREATE INDEX idx_pay_supplier_fk   ON payments(supplier_id);
+CREATE INDEX idx_sm_cust_fk        ON sales_master(customer_phone);
+CREATE INDEX idx_sm_sales_by_fk    ON sales_master(sales_by);
+CREATE INDEX idx_sd_invoice_fk     ON sales_detail(invoice_id);
+CREATE INDEX idx_sd_product_fk     ON sales_detail(product_id);
+CREATE INDEX idx_sr_master_fk      ON sales_return_master(invoice_id);
+CREATE INDEX idx_srd_master_fk     ON sales_return_details(sales_return_id);
+CREATE INDEX idx_srd_product_fk    ON sales_return_details(product_id);
+CREATE INDEX idx_pom_supplier_fk   ON product_order_master(supplier_id);
+CREATE INDEX idx_pod_order_fk      ON product_order_detail(order_id);
+CREATE INDEX idx_pod_product_fk    ON product_order_detail(product_id);
+CREATE INDEX idx_prd_master_fk     ON product_receive_details(receive_id);
+CREATE INDEX idx_prd_product_fk    ON product_receive_details(product_id);
+CREATE INDEX idx_pr2_master_fk     ON product_return_details(return_id);
+CREATE INDEX idx_pr2_product_fk    ON product_return_details(product_id);
+CREATE INDEX idx_dmg_master_fk     ON damage_detail(damage_id);
+CREATE INDEX idx_dmg_product_fk    ON damage_detail(product_id);
+
+
+ALTER TABLE users ADD CONSTRAINT chk_users_role
+  CHECK (role IN ('user','admin','manager'));
+
+ALTER TABLE products ADD CONSTRAINT chk_products_prices
+  CHECK (mrp IS NULL OR mrp >= 0);
+
+ALTER TABLE sales_detail ADD CONSTRAINT chk_sd_qty
+  CHECK (quantity > 0);
+
+ALTER TABLE stock ADD CONSTRAINT chk_stock_qty
+  CHECK (quantity >= 0);
+
+CREATE ROLE ecom_app_rw;
+GRANT SELECT, INSERT, UPDATE, DELETE ON products TO ecom_app_rw;
+-- repeat as needed
+
