@@ -1,0 +1,210 @@
+-- =========================================================
+-- ELECTRONICS SALES & SERVICE - SEQUENCES + TRIGGERS (direct NEXTVAL assignment)
+-- All triggers now use: v_seq := <seq>.NEXTVAL;
+-- =========================================================
+CREATE USER nasim IDENTIFIED BY nasim
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA UNLIMITED ON users
+/
+
+GRANT CONNECT, RESOURCE TO nasim;
+GRANT DBA TO nasim;
+
+CREATE TABLE product_categories (
+    product_cat_id    NUMBER PRIMARY KEY,
+    product_cat_name  VARCHAR2(30),
+    status            NUMBER,
+    cre_by            VARCHAR2(30),
+    cre_dt            DATE,
+    upd_by            VARCHAR2(30),
+    upd_dt            DATE
+);
+
+CREATE SEQUENCE product_categories_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE OR REPLACE TRIGGER trg_product_categories_bi
+BEFORE INSERT OR UPDATE ON product_categories
+REFERENCING NEW AS new OLD AS old
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.product_cat_id IS NULL THEN
+            v_seq := product_categories_seq.NEXTVAL;
+            :new.product_cat_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+EXCEPTION WHEN OTHERS THEN RAISE;
+END;
+/
+
+CREATE TABLE sub_categories (
+    sub_cat_id       NUMBER PRIMARY KEY,
+    sub_cat_name     VARCHAR2(30),
+    product_cat_id   NUMBER,
+    status           NUMBER,
+    cre_by           VARCHAR2(30),
+    cre_dt           DATE,
+    upd_by           VARCHAR2(30),
+    upd_dt           DATE,
+    CONSTRAINT fk_subcat_productcat FOREIGN KEY (product_cat_id) REFERENCES product_categories(product_cat_id)
+);
+CREATE SEQUENCE sub_categories_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE OR REPLACE TRIGGER trg_sub_categories_bi
+BEFORE INSERT OR UPDATE ON sub_categories
+REFERENCING NEW AS new OLD AS old
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.sub_cat_id IS NULL THEN
+            v_seq := sub_categories_seq.NEXTVAL;
+            :new.sub_cat_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+EXCEPTION WHEN OTHERS THEN RAISE;
+END;
+/
+
+CREATE TABLE brand (
+    brand_id      NUMBER PRIMARY KEY,
+    brand_name    VARCHAR2(30),
+    model_name    VARCHAR2(20),
+    product_size  VARCHAR2(15),
+    color         VARCHAR2(10),
+    status        NUMBER,
+    cre_by        VARCHAR2(10),
+    cre_dt        DATE,
+    upd_by        VARCHAR2(10),
+    upd_dt        DATE
+);
+
+CREATE SEQUENCE brand_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE OR REPLACE TRIGGER trg_brand_bi
+BEFORE INSERT OR UPDATE ON brand
+REFERENCING NEW AS new OLD AS old
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.brand_id IS NULL THEN
+            v_seq := brand_seq.NEXTVAL;
+            :new.brand_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+EXCEPTION WHEN OTHERS THEN RAISE;
+END;
+/
+
+CREATE TABLE suppliers (
+    supplier_id NUMBER PRIMARY KEY,
+    supplier_name VARCHAR2(30) NOT NULL,
+    phone_no VARCHAR2(50),
+    email VARCHAR2(30),
+    address VARCHAR2(30),
+    contact_person VARCHAR2(30),
+    cp_phone_no VARCHAR2(50),
+    cp_email VARCHAR2(30),
+    purchase_total NUMBER DEFAULT 0,
+    pay_total NUMBER DEFAULT 0,
+    due NUMBER GENERATED ALWAYS AS (NVL(purchase_total,0) - NVL(pay_total,0)) VIRTUAL,
+    status NUMBER,
+    cre_by VARCHAR2(20),
+    cre_dt DATE,
+    upd_by VARCHAR2(20),
+    upd_dt DATE
+);
+CREATE SEQUENCE suppliers_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE OR REPLACE TRIGGER trg_suppliers_bi
+BEFORE INSERT OR UPDATE ON suppliers
+REFERENCING NEW AS new OLD AS old
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.supplier_id IS NULL THEN
+            v_seq := suppliers_seq.NEXTVAL;
+            :new.supplier_id := v_seq;
+        END IF;
+        IF :new.status IS NULL THEN :new.status := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+EXCEPTION WHEN OTHERS THEN RAISE;
+END;
+/
+
+CREATE TABLE products (
+    product_id        NUMBER PRIMARY KEY,
+    product_code      VARCHAR2(30) UNIQUE,
+    product_name      VARCHAR2(100) NOT NULL,
+    supplier_id       NUMBER,
+    category_id       NUMBER,
+    subcategory_id    NUMBER,
+    brand_id          NUMBER,
+    uom               VARCHAR2(50),
+    mrp               NUMBER,
+    purchase_price    NUMBER,
+    warranty_24_12    VARCHAR2(20),
+    status            VARCHAR2(50),
+    status_num        NUMBER,
+    cre_by            VARCHAR2(20),
+    cre_dt            DATE,
+    upd_by            VARCHAR2(20),
+    upd_dt            DATE,
+    CONSTRAINT fk_products_supplier FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
+    CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES product_categories(product_cat_id),
+    CONSTRAINT fk_products_subcategory FOREIGN KEY (subcategory_id) REFERENCES sub_categories(sub_cat_id),
+    CONSTRAINT fk_products_brand FOREIGN KEY (brand_id) REFERENCES brand(brand_id)
+);
+
+CREATE SEQUENCE products_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE OR REPLACE TRIGGER trg_products_bi
+BEFORE INSERT OR UPDATE ON products
+REFERENCING NEW AS new OLD AS old
+FOR EACH ROW
+DECLARE v_seq NUMBER;
+BEGIN
+    IF INSERTING THEN
+        IF :new.product_id IS NULL THEN
+            v_seq := products_seq.NEXTVAL;
+            :new.product_id := v_seq;
+        END IF;
+        IF :new.status_num IS NULL THEN :new.status_num := 1; END IF;
+        IF :new.cre_by IS NULL THEN :new.cre_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.cre_dt IS NULL THEN :new.cre_dt := SYSDATE; END IF;
+    ELSIF UPDATING THEN
+        IF :new.upd_by IS NULL THEN :new.upd_by := NVL(V('APP_USER'), USER); END IF;
+        IF :new.upd_dt IS NULL THEN :new.upd_dt := SYSDATE; END IF;
+    END IF;
+EXCEPTION WHEN OTHERS THEN RAISE;
+END;
+/
+
+COMMIT;
