@@ -1,0 +1,268 @@
+-- COMPANY (5)
+INSERT INTO company (company_id, company_name, company_proprietor, phone_no, email, address, status)
+VALUES (company_seq.NEXTVAL, 'TechSoft Ltd', 'Nasim Ahmed', '+8801700000001', 'info@techsoft.com', 'Dhaka', 1);
+INSERT INTO company (...)
+VALUES (company_seq.NEXTVAL, 'HomeStyle Interiors', 'Sara Rahman', '+8801700000002', 'contact@homestyle.com', 'Dhaka', 1);
+INSERT INTO company (...)
+VALUES (company_seq.NEXTVAL, 'Gadget World', 'Kamrul Hasan', '+8801700000003', 'support@gadgetworld.com', 'Chattogram', 1);
+INSERT INTO company (...)
+VALUES (company_seq.NEXTVAL, 'Smart Retail BD', 'Farzana Jahan', '+8801700000004', 'hello@smartretail.com', 'Dhaka', 1);
+INSERT INTO company (...)
+VALUES (company_seq.NEXTVAL, 'Digital Services Hub', 'Imran Hossain', '+8801700000005', 'admin@dshub.com', 'Dhaka', 1);
+
+-- Assume company_id 1..5 generated above.
+
+-- DEPARTMENTS (5)
+INSERT INTO departments (department_id, department_name, company_id, status)
+VALUES (departments_seq.NEXTVAL, 'Sales', 1, 1);
+INSERT INTO departments (...)
+VALUES (departments_seq.NEXTVAL, 'IT', 1, 1);
+INSERT INTO departments (...)
+VALUES (departments_seq.NEXTVAL, 'HR', 2, 1);
+INSERT INTO departments (...)
+VALUES (departments_seq.NEXTVAL, 'Accounts', 3, 1);
+INSERT INTO departments (...)
+VALUES (departments_seq.NEXTVAL, 'Service', 1, 1);
+
+-- JOBS (5) – job_id is VARCHAR2, built from job_code + jobs_seq
+INSERT INTO jobs (job_id, job_code, job_title, job_grade, min_salary, max_salary, status)
+VALUES ('SALES' || jobs_seq.NEXTVAL, 'SALES', 'Sales Executive', 'B', 20000, 40000, 1);
+INSERT INTO jobs (...)
+VALUES ('MGR'   || jobs_seq.NEXTVAL, 'MGR',   'Store Manager',  'A', 40000, 80000, 1);
+INSERT INTO jobs (...)
+VALUES ('TECH'  || jobs_seq.NEXTVAL, 'TECH',  'Service Technician','C', 18000, 35000, 1);
+INSERT INTO jobs (...)
+VALUES ('ACC'   || jobs_seq.NEXTVAL, 'ACC',   'Accountant',     'B', 25000, 50000, 1);
+INSERT INTO jobs (...)
+VALUES ('HR'    || jobs_seq.NEXTVAL, 'HR',    'HR Officer',     'B', 22000, 45000, 1);
+
+-- Assume resulting job_id values: 'SALES1','MGR2','TECH3','ACC4','HR5'.
+-- PARTS_CATEGORY (5)
+INSERT INTO parts_category (parts_cat_id, parts_cat_name, status)
+VALUES (parts_cat_seq.NEXTVAL, 'Laptop Parts', 1);
+INSERT INTO parts_category (...)
+VALUES (parts_cat_seq.NEXTVAL, 'Mobile Parts', 1);
+INSERT INTO parts_category (...)
+VALUES (parts_cat_seq.NEXTVAL, 'Printer Parts', 1);
+INSERT INTO parts_category (...)
+VALUES (parts_cat_seq.NEXTVAL, 'Networking Parts', 1);
+INSERT INTO parts_category (...)
+VALUES (parts_cat_seq.NEXTVAL, 'Accessories', 1);
+
+-- Assume parts_cat_id 1..5.
+
+-- PARTS (5)
+INSERT INTO parts (parts_id, parts_name, price, parts_cat_id, status)
+VALUES (parts_seq.NEXTVAL, 'Laptop Battery 6-Cell', 3500, 1, 1);
+INSERT INTO parts (...)
+VALUES (parts_seq.NEXTVAL, 'LCD Screen 14"', 7000, 1, 1);
+INSERT INTO parts (...)
+VALUES (parts_seq.NEXTVAL, 'Smartphone Display', 4500, 2, 1);
+INSERT INTO parts (...)
+VALUES (parts_seq.NEXTVAL, 'Wi-Fi Router Antenna', 800, 4, 1);
+INSERT INTO parts (...)
+VALUES (parts_seq.NEXTVAL, 'USB Type-C Cable', 300, 5, 1);
+
+-- PRODUCT_CATEGORIES (5)
+INSERT INTO product_categories (product_cat_id, product_cat_name, status)
+VALUES (product_categories_seq.NEXTVAL, 'Laptops', 1);
+INSERT INTO product_categories (...)
+VALUES (product_categories_seq.NEXTVAL, 'Smartphones', 1);
+INSERT INTO product_categories (...)
+VALUES (product_categories_seq.NEXTVAL, 'Home Appliances', 1);
+INSERT INTO product_categories (...)
+VALUES (product_categories_seq.NEXTVAL, 'Computer Accessories', 1);
+INSERT INTO product_categories (...)
+VALUES (product_categories_seq.NEXTVAL, 'Networking', 1);
+
+-- Assume product_cat_id 1..5.
+
+-- SUB_CATEGORIES (5)
+INSERT INTO sub_categories (sub_cat_id, sub_cat_name, product_cat_id, status)
+VALUES (sub_categories_seq.NEXTVAL, 'Gaming Laptops', 1, 1);
+INSERT INTO sub_categories (...)
+VALUES (sub_categories_seq.NEXTVAL, 'Business Laptops', 1, 1);
+INSERT INTO sub_categories (...)
+VALUES (sub_categories_seq.NEXTVAL, 'Android Phones', 2, 1);
+INSERT INTO sub_categories (...)
+VALUES (sub_categories_seq.NEXTVAL, 'Keyboards & Mice', 4, 1);
+INSERT INTO sub_categories (...)
+VALUES (sub_categories_seq.NEXTVAL, 'Wi-Fi Routers', 5, 1);
+
+-- Assume sub_cat_id 1..5.
+
+-- BRAND (5)
+INSERT INTO brand (brand_id, brand_name, model_name, size, color, status)
+VALUES (brand_seq.NEXTVAL, 'Dell', 'Inspiron 15', '15-inch', 'Black', 1);
+INSERT INTO brand (...)
+VALUES (brand_seq.NEXTVAL, 'HP', 'Pavilion 14', '14-inch', 'Silver', 1);
+INSERT INTO brand (...)
+VALUES (brand_seq.NEXTVAL, 'Samsung', 'Galaxy A55', '6.5-inch', 'Blue', 1);
+INSERT INTO brand (...)
+VALUES (brand_seq.NEXTVAL, 'LG', 'Smart Fridge 300L', '300L', 'Silver', 1);
+INSERT INTO brand (...)
+VALUES (brand_seq.NEXTVAL, 'TP-Link', 'Archer C6', 'Standard', 'Black', 1);
+
+-- Assume brand_id 1..5.
+-- SUPPLIERS (5)
+INSERT INTO suppliers (supplier_id, supplier_name, phone_no, email, address,
+                       contact_person, cp_phone_no, cp_email, status)
+VALUES (suppliers_seq.NEXTVAL, 'TechSource Ltd', '+8801711000001', 'info@techsource.com',
+        'Dhaka', 'Rahim Ahmed', '+8801711000011', 'rahim@techsource.com', 1);
+INSERT INTO suppliers (...)
+VALUES (suppliers_seq.NEXTVAL, 'Mobile World BD', '+8801711000002', 'contact@mobileworld.com',
+        'Dhaka', 'Jamal Uddin', '+8801711000012', 'jamal@mobileworld.com', 1);
+INSERT INTO suppliers (...)
+VALUES (suppliers_seq.NEXTVAL, 'Appliance House', '+8801711000003', 'sales@appliancehouse.com',
+        'Chattogram', 'Sabina Akter', '+8801711000013', 'sabina@appliancehouse.com', 1);
+INSERT INTO suppliers (...)
+VALUES (suppliers_seq.NEXTVAL, 'IT Components Hub', '+8801711000004', 'support@itchub.com',
+        'Dhaka', 'Nasrin Jahan', '+8801711000014', 'nasrin@itchub.com', 1);
+INSERT INTO suppliers (...)
+VALUES (suppliers_seq.NEXTVAL, 'NetWorld Distributors', '+8801711000005', 'sales@networld.com',
+        'Dhaka', 'Fahim Rahman', '+8801711000015', 'fahim@networld.com', 1);
+
+-- Assume supplier_id 1..5.
+
+-- PRODUCTS (5)
+INSERT INTO products (product_id, product_code, product_name,
+                      supplier_id, category_id, subcategory_id, brand_id,
+                      uom, mrp, purchase_price,
+                      warranty_24_12, status, status_num)
+VALUES (products_seq.NEXTVAL, 'PRD-0001', 'Dell Inspiron 15 Gaming Laptop',
+        1, 1, 1, 1,
+        'PCS', 85000, 75000,
+        '24', 'Active', 1);
+
+INSERT INTO products (...)
+VALUES (products_seq.NEXTVAL, 'PRD-0002', 'HP Pavilion 14 Business Laptop',
+        1, 1, 2, 2,
+        'PCS', 78000, 68000,
+        '24', 'Active', 1);
+
+INSERT INTO products (...)
+VALUES (products_seq.NEXTVAL, 'PRD-0003', 'Samsung Galaxy A55 Smartphone',
+        2, 2, 3, 3,
+        'PCS', 45000, 38000,
+        '12', 'Active', 1);
+
+INSERT INTO products (...)
+VALUES (products_seq.NEXTVAL, 'PRD-0004', 'LG Smart Fridge 300L',
+        3, 3, 3, 4,
+        'PCS', 90000, 80000,
+        '12', 'Active', 1);
+
+INSERT INTO products (...)
+VALUES (products_seq.NEXTVAL, 'PRD-0005', 'TP-Link Archer C6 Wi-Fi Router',
+        5, 5, 5, 5,
+        'PCS', 3500, 2800,
+        '12', 'Active', 1);
+
+-- Assume product_id 1..5.
+
+-- STOCK (5)
+INSERT INTO stock (stock_id, product_id, supplier_id, product_cat_id, sub_cat_id, quantity, status)
+VALUES (stock_seq.NEXTVAL, 1, 1, 1, 1, 20, 1);
+INSERT INTO stock (...)
+VALUES (stock_seq.NEXTVAL, 2, 1, 1, 2, 15, 1);
+INSERT INTO stock (...)
+VALUES (stock_seq.NEXTVAL, 3, 2, 2, 3, 30, 1);
+INSERT INTO stock (...)
+VALUES (stock_seq.NEXTVAL, 4, 3, 3, 3, 5, 1);
+INSERT INTO stock (...)
+VALUES (stock_seq.NEXTVAL, 5, 5, 5, 5, 40, 1);
+-- EMPLOYEES (5) assume departments 1..5, jobs IDs as above
+INSERT INTO employees (employee_id, first_name, last_name, email, phone_no, hire_date, salary,
+                       job_id, manager_id, department_id, status)
+VALUES (employees_seq.NEXTVAL, 'Arif', 'Khan', 'arif.khan@techsoft.com', '+8801811000001',
+        SYSDATE-400, 35000, 'SALES1', NULL, 1, 1);
+INSERT INTO employees (...)
+VALUES (employees_seq.NEXTVAL, 'Mitu', 'Akter', 'mitu.akter@techsoft.com', '+8801811000002',
+        SYSDATE-300, 60000, 'MGR2', NULL, 2, 1);
+INSERT INTO employees (...)
+VALUES (employees_seq.NEXTVAL, 'Rafi', 'Hasan', 'rafi.hasan@techsoft.com', '+8801811000003',
+        SYSDATE-200, 28000, 'TECH3', 2, 5, 1);
+INSERT INTO employees (...)
+VALUES (employees_seq.NEXTVAL, 'Naila', 'Sultana', 'naila.sultana@homestyle.com', '+8801811000004',
+        SYSDATE-150, 30000, 'ACC4', 2, 4, 1);
+INSERT INTO employees (...)
+VALUES (employees_seq.NEXTVAL, 'Azad', 'Hossain', 'azad.hossain@techsoft.com', '+8801811000005',
+        SYSDATE-100, 27000, 'HR5', 2, 3, 1);
+
+-- Assume employee_id 1..5.
+
+-- USERS (5)
+INSERT INTO users (user_id, user_name, password, role, employee_id, status)
+VALUES (users_seq.NEXTVAL, 'arif', 'Password#123', 'user', 1, 1);
+INSERT INTO users (...)
+VALUES (users_seq.NEXTVAL, 'mitu', 'Password#123', 'admin', 2, 1);
+INSERT INTO users (...)
+VALUES (users_seq.NEXTVAL, 'rafi', 'Password#123', 'user', 3, 1);
+INSERT INTO users (...)
+VALUES (users_seq.NEXTVAL, 'naila', 'Password#123', 'user', 4, 1);
+INSERT INTO users (...)
+VALUES (users_seq.NEXTVAL, 'azad', 'Password#123', 'manager', 5, 1);
+
+-- CUSTOMERS (5) – no seq
+INSERT INTO customers (phone_no, customer_name, email, address, city, status)
+VALUES ('+8801911000001', 'Hasibul Alam', 'hasib@example.com', 'Dhaka', 'Dhaka', 1);
+INSERT INTO customers (...)
+VALUES ('+8801911000002', 'Sumaiya Akter', 'sumaiya@example.com', 'Dhaka', 'Dhaka', 1);
+INSERT INTO customers (...)
+VALUES ('+8801911000003', 'Mahin Rahman', 'mahin@example.com', 'Chattogram', 'Chattogram', 1);
+INSERT INTO customers (...)
+VALUES ('+8801911000004', 'Tonmoy Das', 'tonmoy@example.com', 'Dhaka', 'Dhaka', 1);
+INSERT INTO customers (...)
+VALUES ('+8801911000005', 'Joya Sultana', 'joya@example.com', 'Dhaka', 'Dhaka', 1);
+
+-- PAYMENTS (5)
+INSERT INTO payments (payment_id, payment_date, amount, payment_type, supplier_id, status)
+VALUES (payments_seq.NEXTVAL, TRUNC(SYSDATE-10), 50000, 'Bank Transfer', 1, 1);
+INSERT INTO payments (...)
+VALUES (payments_seq.NEXTVAL, TRUNC(SYSDATE-9), 30000, 'Cash', 2, 1);
+INSERT INTO payments (...)
+VALUES (payments_seq.NEXTVAL, TRUNC(SYSDATE-8), 45000, 'Bkash', 3, 1);
+INSERT INTO payments (...)
+VALUES (payments_seq.NEXTVAL, TRUNC(SYSDATE-7), 20000, 'Nagad', 4, 1);
+INSERT INTO payments (...)
+VALUES (payments_seq.NEXTVAL, TRUNC(SYSDATE-6), 15000, 'Bank Transfer', 5, 1);
+-- SERVICE_LIST (5)
+INSERT INTO service_list (servicelist_id, service_name, service_desc, service_cost, status)
+VALUES (service_list_seq.NEXTVAL, 'Laptop Diagnostics', 'Full hardware and software check', 1000, 1);
+INSERT INTO service_list (...)
+VALUES (service_list_seq.NEXTVAL, 'OS Reinstallation', 'Clean OS install with drivers', 1500, 1);
+INSERT INTO service_list (...)
+VALUES (service_list_seq.NEXTVAL, 'Screen Replacement', 'LCD/LED panel replacement', 3000, 1);
+INSERT INTO service_list (...)
+VALUES (service_list_seq.NEXTVAL, 'Smartphone Repair', 'Board-level repair', 2000, 1);
+INSERT INTO service_list (...)
+VALUES (service_list_seq.NEXTVAL, 'Network Setup', 'Home/office network configuration', 2500, 1);
+
+-- Assume servicelist_id 1..5.
+
+-- SERVICE_MASTER (5)
+INSERT INTO service_master (service_id, customer_phone, servicelist_id, service_by,
+                            service_charge, parts_price, status)
+VALUES (service_master_seq.NEXTVAL, '+8801911000001', 1, 3, 1000, 500, 1);
+INSERT INTO service_master (...)
+VALUES (service_master_seq.NEXTVAL, '+8801911000002', 2, 3, 1500, 0, 1);
+INSERT INTO service_master (...)
+VALUES (service_master_seq.NEXTVAL, '+8801911000003', 3, 3, 3000, 7000, 1);
+INSERT INTO service_master (...)
+VALUES (service_master_seq.NEXTVAL, '+8801911000004', 4, 3, 2000, 4500, 1);
+INSERT INTO service_master (...)
+VALUES (service_master_seq.NEXTVAL, '+8801911000005', 5, 3, 2500, 0, 1);
+
+-- Assume service_id 1..5.
+
+-- SERVICE_DETAILS (5)
+INSERT INTO service_details (service_det_id, service_id, parts_id, price, status)
+VALUES (service_details_seq.NEXTVAL, 1, 5, 300, 1);
+INSERT INTO service_details (...)
+VALUES (service_details_seq.NEXTVAL, 2, 1, 3500, 1);
+INSERT INTO service_details (...)
+VALUES (service_details_seq.NEXTVAL, 3, 2, 7000, 1);
+INSERT INTO service_details (...)
+VALUES (service_details_seq.NEXTVAL, 4, 3, 4500, 1);
+INSERT INTO service_details (...)
+VALUES (service_details_seq.NEXTVAL, 5, 4, 800, 1);
