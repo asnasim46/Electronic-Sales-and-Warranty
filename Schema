@@ -7,7 +7,7 @@ DEFAULT TABLESPACE users
 TEMPORARY TABLESPACE temp
 QUOTA UNLIMITED ON users
 /
-{{{DEFAULT TABLESPACE users → টেবিলগুলো users tablespace‑এ থাকবে।
+/*{{{DEFAULT TABLESPACE users → টেবিলগুলো users tablespace‑এ থাকবে।
 
 TEMPORARY TABLESPACE temp → sort/temporary কাজের জন্য temp tablespace ব্যবহার হবে।
 
@@ -33,7 +33,7 @@ upd_dt
 cre_by/cre_dt = রেকর্ড তৈরি সম্পর্কিত তথ্য
 upd_by/upd_dt = রেকর্ড আপডেট সম্পর্কিত তথ্য}}}}
 
-**
+**/
 GRANT CONNECT, RESOURCE TO marzan;
 GRANT DBA TO marzan;
 
