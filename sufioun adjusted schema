@@ -212,7 +212,7 @@ CREATE TABLE employees (
     CONSTRAINT fk_employees_job
         FOREIGN KEY (job_id) REFERENCES jobs(job_id),
     CONSTRAINT fk_employees_manager
-        FOREIGN KEY (manager_id) REFERENCES employees(employee_id),
+        FOREIGN KEY (manager_id) REFERENCES employees(employee_id) ON DELETE SET NULL,
     CONSTRAINT fk_employees_department
         FOREIGN KEY (department_id) REFERENCES departments(department_id)
 );
@@ -356,7 +356,7 @@ CREATE TABLE sales_detail (
     upd_by VARCHAR2(100),
     upd_dt DATE,
     CONSTRAINT fk_sd_invoice
-        FOREIGN KEY (invoice_id) REFERENCES sales_master(invoice_id),
+        FOREIGN KEY (invoice_id) REFERENCES sales_master(invoice_id) ON DELETE CASCADE,
     CONSTRAINT fk_sd_product
         FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
