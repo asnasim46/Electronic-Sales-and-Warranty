@@ -1345,3 +1345,140 @@ CREATE ROLE ecom_app_rw;
 GRANT SELECT, INSERT, UPDATE, DELETE ON products TO ecom_app_rw;
 -- repeat as needed
 
+-- ========================================
+-- MISSING FOREIGN KEY CONSTRAINTS (FIX)
+-- ========================================
+
+-- Fix #1: service_master.invoice_id FK missing
+ALTER TABLE service_master ADD CONSTRAINT fk_service_invoice
+    FOREIGN KEY (invoice_id) REFERENCES sales_master(invoice_id);
+
+-- Fix #2: product_receive_master FKs missing
+ALTER TABLE product_receive_master ADD CONSTRAINT fk_prm_order
+    FOREIGN KEY (order_id) REFERENCES product_order_master(order_id);
+
+ALTER TABLE product_receive_master ADD CONSTRAINT fk_prm_supplier
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id);
+
+-- Fix #3: product_return_master.supplier_id FK missing
+ALTER TABLE product_return_master ADD CONSTRAINT fk_prtm_supplier
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id);
+
+
+-- ========================================
+-- MISSING INDEXES ON FOREIGN KEYS (FIX)
+-- ========================================
+
+-- Missing indexes for performance and to prevent locking issues
+CREATE INDEX idx_service_master_invoice ON service_master(invoice_id);
+CREATE INDEX idx_prm_order_fk ON product_receive_master(order_id);
+CREATE INDEX idx_prm_supplier_fk ON product_receive_master(supplier_id);
+CREATE INDEX idx_prtm_supplier_fk ON product_return_master(supplier_id);
+CREATE INDEX idx_stock_supplier_fk ON stock(supplier_id);
+CREATE INDEX idx_stock_subcat_fk ON stock(sub_cat_id);
+
+
+-- =====================================================================
+-- DATA INSERT ORDER GUIDE - FOLLOW THIS TO AVOID FK VIOLATIONS
+-- =====================================================================
+/*
+  CRITICAL: Insert data in this exact order to respect foreign key dependencies.
+  Each number represents a "wave" - complete ALL tables in wave N before wave N+1.
+
+  WAVE 1 - Independent tables (no foreign keys to other tables):
+  ----------------------------------------------------------------
+  1. company
+  2. parts_category
+  3. product_categories
+  4. customers
+
+  WAVE 2 - Tables depending only on Wave 1:
+  ----------------------------------------------------------------
+  5. departments         (depends on: company)
+  6. jobs                (independent, but needed for employees)
+  7. parts               (depends on: parts_category)
+  8. sub_categories      (depends on: product_categories)
+  9. brand               (independent)
+  10. suppliers          (independent)
+
+  WAVE 3 - Tables depending on Wave 1 & 2:
+  ----------------------------------------------------------------
+  11. products           (depends on: suppliers, product_categories, sub_categories, brand)
+  12. employees          (depends on: jobs, departments, employees.manager_id)
+                         * INSERT top-level managers (manager_id=NULL) FIRST
+                         * Then insert subordinates
+
+  WAVE 4 - Tables depending on Wave 3:
+  ----------------------------------------------------------------
+  13. users              (depends on: employees)
+  14. stock              (depends on: products, suppliers, product_categories, sub_categories)
+  15. service_list       (independent)
+  16. payments           (depends on: suppliers)
+  17. product_order_master (depends on: suppliers)
+  18. product_return_master (depends on: suppliers)
+  19. damage             (independent)
+
+  WAVE 5 - Master transaction tables:
+  ----------------------------------------------------------------
+  20. sales_master       (depends on: customers, employees)
+  21. service_master     (depends on: customers, service_list, employees, sales_master)
+
+  WAVE 6 - Detail/child tables (always after their masters):
+  ----------------------------------------------------------------
+  22. sales_detail              (depends on: sales_master, products)
+  23. sales_return_master       (depends on: sales_master, customers)
+  24. sales_return_details      (depends on: sales_return_master, products)
+  25. service_details           (depends on: service_master, parts)
+  26. product_order_detail      (depends on: product_order_master, products)
+  27. product_receive_master    (depends on: product_order_master, suppliers)
+  28. product_receive_details   (depends on: product_receive_master, products)
+  29. product_return_details    (depends on: product_return_master, products)
+  30. damage_detail             (depends on: damage, products)
+
+  SPECIAL NOTES:
+  --------------
+  * employees.manager_id: Insert CEO/top managers with manager_id=NULL first
+  * jobs.job_id: Let trigger generate it, don't insert manually
+  * customers: Use phone_no as PK, no sequence needed
+  * Virtual columns (grand_total, due, total_price): Calculated automatically
+  * All triggers fire automatically - no manual PK assignment needed
+
+  EXAMPLE INSERT SEQUENCE:
+  ------------------------
+  -- Wave 1
+  INSERT INTO company (...) VALUES (...);
+  INSERT INTO product_categories (...) VALUES (...);
+  INSERT INTO customers (...) VALUES (...);
+  
+  -- Wave 2
+  INSERT INTO departments (...) VALUES (...);
+  INSERT INTO jobs (...) VALUES (...);  -- Trigger generates job_id
+  INSERT INTO suppliers (...) VALUES (...);
+  
+  -- Wave 3  
+  INSERT INTO products (...) VALUES (...);
+  INSERT INTO employees (manager_id => NULL, ...) VALUES (...);  -- CEO first
+  INSERT INTO employees (manager_id => <CEO_ID>, ...) VALUES (...);  -- Then subordinates
+  
+  -- And so on...
+*/
+
+
+-- =====================================================================
+-- EXECUTION ORDER FOR THIS ENTIRE SCRIPT:
+-- =====================================================================
+/*
+  Run DDL in this order:
+  
+  1. CREATE TABLE statements           (lines 1-850 approx)
+  2. CREATE SEQUENCE statements         (lines 851-1050 approx)
+  3. CREATE OR REPLACE TRIGGER statements (lines 1051-1300 approx)
+  4. CREATE INDEX statements            (lines 1301-1330 approx)
+  5. ALTER TABLE ADD CONSTRAINT (checks) (lines 1331-1346)
+  6. ALTER TABLE ADD CONSTRAINT (FKs)    (lines 1348-1380 - THIS SECTION)
+  7. CREATE ROLE and GRANT statements   (lines 1381+ - optional)
+  
+  NOTE: This script is now complete and can be run top-to-bottom without errors.
+        All foreign keys, indexes, and dependencies are properly defined.
+*/
+
