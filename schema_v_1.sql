@@ -616,7 +616,6 @@ CREATE TABLE products (
     purchase_price    NUMBER,
     warranty_24_12    VARCHAR2(20),
     status            VARCHAR2(50),
-    status_num        NUMBER,
     cre_by            VARCHAR2(20),
     cre_dt            DATE,
     upd_by            VARCHAR2(20),
