@@ -601,9 +601,9 @@ BEGIN
     IF :NEW.cre_by IS NULL THEN :NEW.cre_by := NVL(V('APP_USER'), USER); END IF;
     IF :NEW.cre_dt IS NULL THEN :NEW.cre_dt := SYSDATE; END IF;
   ELSIF UPDATING THEN
-    IF UPDATING('amount') OR UPDATING('quantity') THEN
-      :NEW.line_total := NVL(:NEW.amount,0) * NVL(:NEW.quantity,1);
-    END IF;
+  IF UPDATING('amount') OR UPDATING('quantity') THEN
+    :NEW.line_total := NVL(:NEW.amount,0) * NVL(:NEW.quantity,1);
+END IF;
     IF :NEW.upd_by IS NULL THEN :NEW.upd_by := NVL(V('APP_USER'), USER); END IF;
     IF :NEW.upd_dt IS NULL THEN :NEW.upd_dt := SYSDATE; END IF;
   END IF;
