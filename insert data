@@ -1,0 +1,359 @@
+
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('ENG', 'Engine Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('ELC', 'Electrical Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('BRK', 'Brake Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('SUS', 'Suspension Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('BDY', 'Body Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('INT', 'Interior Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('EXT', 'Exterior Parts');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('FLT', 'Filters');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('OIL', 'Oils');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('TYR', 'Tyres');
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'ENG', 'Spark Plug', 150, parts_cat_id FROM parts_category WHERE parts_cat_name='Engine Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'ENG', 'Oil Pump', 2500, parts_cat_id FROM parts_category WHERE parts_cat_name='Engine Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'BRK', 'Brake Pad', 1200, parts_cat_id FROM parts_category WHERE parts_cat_name='Brake Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'BRK', 'Brake Disc', 3200, parts_cat_id FROM parts_category WHERE parts_cat_name='Brake Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'ELC', 'Battery', 6500, parts_cat_id FROM parts_category WHERE parts_cat_name='Electrical Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'ELC', 'Alternator', 7200, parts_cat_id FROM parts_category WHERE parts_cat_name='Electrical Parts';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'FLT', 'Air Filter', 600, parts_cat_id FROM parts_category WHERE parts_cat_name='Filters';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'FLT', 'Oil Filter', 450, parts_cat_id FROM parts_category WHERE parts_cat_name='Filters';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'TYR', 'Front Tyre', 8000, parts_cat_id FROM parts_category WHERE parts_cat_name='Tyres';
+
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'TYR', 'Rear Tyre', 8200, parts_cat_id FROM parts_category WHERE parts_cat_name='Tyres';
+
+
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Rahim Uddin', '01710000001', 'Dhaka');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Karim Ali', '01710000002', 'Dhaka');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Hasan Mia', '01710000003', 'Chittagong');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Jamal Khan', '01710000004', 'Sylhet');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Rasel Ahmed', '01710000005', 'Khulna');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Shakil Hossain', '01710000006', 'Rajshahi');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Imran Rahman', '01710000007', 'Barisal');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Sabbir Islam', '01710000008', 'Rangpur');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Mahmud Hasan', '01710000009', 'Comilla');
+INSERT INTO customers (customer_name, phone_no, city) VALUES ('Fahim Chowdhury', '01710000010', 'Gazipur');
+
+
+INSERT INTO company (company_name, phone_no, email) VALUES ('Auto Care Ltd', '01911000001', 'info@autocare.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Speed Motors', '01911000002', 'info@speedmotors.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('City Auto', '01911000003', 'info@cityauto.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Prime Garage', '01911000004', 'info@primegarage.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Auto Hub', '01911000005', 'info@autohub.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Fast Track', '01911000006', 'info@fasttrack.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Motor World', '01911000007', 'info@motorworld.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Gear Box', '01911000008', 'info@gearbox.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Car Clinic', '01911000009', 'info@carclinic.com');
+INSERT INTO company (company_name, phone_no, email) VALUES ('Drive Safe', '01911000010', 'info@drivesafe.com');
+
+INSERT INTO product_categories (product_cat_name) VALUES ('Electronics');
+INSERT INTO product_categories (product_cat_name) VALUES ('Mechanical');
+INSERT INTO product_categories (product_cat_name) VALUES ('Accessories');
+INSERT INTO product_categories (product_cat_name) VALUES ('Lubricants');
+INSERT INTO product_categories (product_cat_name) VALUES ('Tools');
+INSERT INTO product_categories (product_cat_name) VALUES ('Safety');
+INSERT INTO product_categories (product_cat_name) VALUES ('Interior');
+INSERT INTO product_categories (product_cat_name) VALUES ('Exterior');
+INSERT INTO product_categories (product_cat_name) VALUES ('Tyres');
+INSERT INTO product_categories (product_cat_name) VALUES ('Batteries');
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'LED Lights', product_cat_id FROM product_categories WHERE product_cat_name='Electronics';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Sensors', product_cat_id FROM product_categories WHERE product_cat_name='Electronics';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Bearings', product_cat_id FROM product_categories WHERE product_cat_name='Mechanical';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Belts', product_cat_id FROM product_categories WHERE product_cat_name='Mechanical';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Seat Covers', product_cat_id FROM product_categories WHERE product_cat_name='Interior';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Floor Mats', product_cat_id FROM product_categories WHERE product_cat_name='Interior';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Wipers', product_cat_id FROM product_categories WHERE product_cat_name='Exterior';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Mirrors', product_cat_id FROM product_categories WHERE product_cat_name='Exterior';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Car Tyres', product_cat_id FROM product_categories WHERE product_cat_name='Tyres';
+
+INSERT INTO sub_categories (sub_cat_name, product_cat_id)
+SELECT 'Bike Tyres', product_cat_id FROM product_categories WHERE product_cat_name='Tyres';
+
+
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Toyota', 'Corolla', 'White');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Honda', 'Civic', 'Black');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Nissan', 'Sunny', 'Silver');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Hyundai', 'Elantra', 'Blue');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Suzuki', 'Swift', 'Red');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('BMW', 'X1', 'White');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Audi', 'A4', 'Black');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Ford', 'Focus', 'Grey');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Kia', 'Rio', 'Blue');
+INSERT INTO brand (brand_name, model_name, color) VALUES ('Mazda', 'Axela', 'Red');
+
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Global Parts', '01811000001');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Auto Supply', '01811000002');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Motor Parts', '01811000003');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Speed Traders', '01811000004');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Prime Suppliers', '01811000005');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('City Traders', '01811000006');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Universal Auto', '01811000007');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Fast Auto', '01811000008');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Reliable Parts', '01811000009');
+INSERT INTO suppliers (supplier_name, phone_no) VALUES ('Trust Auto', '01811000010');
+
+
+INSERT INTO products (product_code, product_name, category_id, subcategory_id, supplier_id, brand_id, mrp)
+SELECT 'PRD1','LED Headlight', pc.product_cat_id, sc.sub_cat_id, s.supplier_id, b.brand_id, 3500
+FROM product_categories pc, sub_categories sc, suppliers s, brand b
+WHERE pc.product_cat_name='Electronics'
+AND sc.sub_cat_name='LED Lights'
+AND s.supplier_name='Global Parts'
+AND b.brand_name='Toyota';
+
+-- repeat pattern (9 more)
+
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('ADM','Admin','A');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('MGR','Manager','A');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('ACC','Accountant','B');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('TEC','Technician','B');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('SAL','Sales','C');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('HR','HR','B');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('SUP','Supervisor','B');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('AST','Assistant','C');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('DRV','Driver','C');
+INSERT INTO jobs (job_code, job_title, job_grade) VALUES ('SEC','Security','C');
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Admin', company_id FROM company WHERE company_name='Auto Care Ltd';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Accounts', company_id FROM company WHERE company_name='Auto Care Ltd';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Sales', company_id FROM company WHERE company_name='Speed Motors';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'HR', company_id FROM company WHERE company_name='Speed Motors';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Workshop', company_id FROM company WHERE company_name='City Auto';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Service', company_id FROM company WHERE company_name='Prime Garage';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Logistics', company_id FROM company WHERE company_name='Auto Hub';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Procurement', company_id FROM company WHERE company_name='Motor World';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Support', company_id FROM company WHERE company_name='Gear Box';
+
+INSERT INTO departments (department_name, company_id)
+SELECT 'Operations', company_id FROM company WHERE company_name='Drive Safe';
+
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Rahim','Ahmed', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Manager' AND d.department_name='Admin';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Karim','Khan', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Accountant' AND d.department_name='Accounts';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Hasan','Ali', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Sales' AND d.department_name='Sales';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Imran','Hossain', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='HR' AND d.department_name='HR';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Sabbir','Rahman', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Technician' AND d.department_name='Workshop';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Fahim','Islam', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Supervisor' AND d.department_name='Service';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Rasel','Uddin', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Assistant' AND d.department_name='Logistics';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Shakil','Mia', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Driver' AND d.department_name='Support';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Mahmud','Hasan', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Security' AND d.department_name='Operations';
+
+INSERT INTO employees (first_name, last_name, job_id, department_id)
+SELECT 'Jamal','Khan', j.job_id, d.department_id
+FROM jobs j, departments d
+WHERE j.job_title='Admin' AND d.department_name='Admin';
+
+
+UPDATE departments d
+SET manager_id = (
+  SELECT e.employee_id
+  FROM employees e
+  WHERE e.last_name='Ahmed'
+)
+WHERE d.department_name='Admin';
+
+
+INSERT INTO com_users (user_name, password, employee_id)
+SELECT 'admin','admin123', employee_id FROM employees WHERE last_name='Ahmed';
+
+INSERT INTO com_users (user_name, password, employee_id)
+SELECT 'karim','pass123', employee_id FROM employees WHERE last_name='Khan';
+
+INSERT INTO com_users (user_name, password, employee_id)
+SELECT 'hasan','pass123', employee_id FROM employees WHERE last_name='Ali';
+
+INSERT INTO com_users (user_name, password, employee_id)
+SELECT 'imran','pass123', employee_id FROM employees WHERE last_name='Hossain';
+
+INSERT INTO com_users (user_name, password, employee_id)
+SELECT 'sabbir','pass123', employee_id FROM employees WHERE last_name='Rahman';
+
+INSERT INTO com_users (user_name, password) VALUES ('guest1','guest');
+INSERT INTO com_users (user_name, password) VALUES ('guest2','guest');
+INSERT INTO com_users (user_name, password) VALUES ('guest3','guest');
+INSERT INTO com_users (user_name, password) VALUES ('guest4','guest');
+INSERT INTO com_users (user_name, password) VALUES ('guest5','guest');
+
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Oil Change',500);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Engine Tune',2000);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Brake Service',1500);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Battery Check',300);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Wheel Alignment',1200);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Car Wash',400);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','AC Service',2500);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Suspension Check',1800);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Tyre Change',600);
+INSERT INTO service_list (service_code, service_name, service_cost) VALUES ('SRV','Full Service',5000);
+
+
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Fuel');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Electricity');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Rent');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Internet');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Maintenance');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Stationery');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Salary');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Transport');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Refreshment');
+INSERT INTO expense_list (expense_code, type_name) VALUES ('EXP','Misc');
+
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXM', SYSDATE, expense_type_id, 5000 FROM expense_list WHERE type_name='Fuel';
+
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXM', SYSDATE, expense_type_id, 12000 FROM expense_list WHERE type_name='Salary';
+
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXM', SYSDATE, expense_type_id, 3000 FROM expense_list WHERE type_name='Electricity';
+
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXM', SYSDATE, expense_type_id, 2000 FROM expense_list WHERE type_name='Internet';
+
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXM', SYSDATE, expense_type_id, 8000 FROM expense_list WHERE type_name='Rent';
+
+-- repeat same pattern for remaining types if needed
+
+INSERT INTO expense_details (detail_code, expense_id, expense_type_id, amount, quantity)
+SELECT 'DTL', em.expense_id, el.expense_type_id, 1000, 2
+FROM expense_master em, expense_list el
+WHERE el.type_name='Fuel'
+AND ROWNUM <= 10;
+
+
+
+----------------------------------------
+
+
+
+-- Department heads (no manager)
+UPDATE employees
+SET manager_id = NULL
+WHERE last_name IN ('Ahmed','Khan','Ali','Hossain');
+
+UPDATE employees e
+SET manager_id = (
+    SELECT m.employee_id
+    FROM employees m
+    WHERE m.last_name = 'Ahmed'
+)
+WHERE e.department_id = (
+    SELECT department_id
+    FROM departments
+    WHERE department_name = 'Workshop'
+)
+AND e.last_name <> 'Ahmed';
+
+UPDATE employees e
+SET manager_id = (
+    SELECT m.employee_id
+    FROM employees m
+    WHERE m.last_name = 'Hossain'
+)
+WHERE e.department_id = (
+    SELECT department_id
+    FROM departments
+    WHERE department_name = 'Accounts'
+)
+AND e.last_name <> 'Hossain';
+
+
+
+SELECT
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    m.first_name AS manager_first_name,
+    m.last_name  AS manager_last_name
+FROM employees e
+LEFT JOIN employees m
+ON e.manager_id = m.employee_id
+ORDER BY e.last_name;
