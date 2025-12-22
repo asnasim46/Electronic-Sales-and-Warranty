@@ -1,0 +1,277 @@
+--------------------------------------------------------------------------------
+-- SAMPLE DATA INSERTION SCRIPT (ELECTRONICS BUSINESS)
+--------------------------------------------------------------------------------
+
+-- 01. COMPANY
+INSERT INTO company (company_name, phone_no, email, address) 
+VALUES ('Tech Nova Electronics', '01711223344', 'info@technova.com', 'Multiplan Center, Dhaka');
+
+-- 02. JOBS
+INSERT INTO jobs (job_code, job_title, job_grade, min_salary, max_salary) VALUES ('MGR', 'Store Manager', 'A', 50000, 80000);
+INSERT INTO jobs (job_code, job_title, job_grade, min_salary, max_salary) VALUES ('SLS', 'Sales Executive', 'B', 20000, 35000);
+INSERT INTO jobs (job_code, job_title, job_grade, min_salary, max_salary) VALUES ('TEC', 'Service Technician', 'B', 25000, 40000);
+
+-- 03. CUSTOMERS
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01811000001', 'Arif Ahmed', 'arif@email.com', 'Dhaka');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01911000002', 'Sultana Razia', 'razia@email.com', 'Chittagong');
+
+-- 04. PARTS_CATEGORY
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('SCR', 'Screens & Displays');
+INSERT INTO parts_category (parts_cat_code, parts_cat_name) VALUES ('BAT', 'Batteries');
+
+-- 05. PRODUCT_CATEGORIES
+INSERT INTO product_categories (product_cat_name) VALUES ('Laptops');
+INSERT INTO product_categories (product_cat_name) VALUES ('Smartphones');
+
+-- 06. BRAND
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('Samsung', 'Galaxy S23', '6.1 inch', 'Phantom Black');
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('HP', 'Pavilion 15', '15.6 inch', 'Natural Silver');
+
+-- 07. SUPPLIERS
+INSERT INTO suppliers (supplier_name, phone_no, email, contact_person) VALUES ('Global Tech Dist.', '01511667788', 'dist@global.com', 'Mr. Rahim');
+
+-- 08. SERVICE_LIST
+INSERT INTO service_list (service_name, service_desc, service_cost) VALUES ('Display Repair', 'LCD/OLED Replacement', 1500);
+INSERT INTO service_list (service_name, service_desc, service_cost) VALUES ('Software Flash', 'OS Re-installation', 800);
+
+-- 09. EXPENSE_LIST
+INSERT INTO expense_list (expense_code, type_name, default_amount) VALUES ('RENT', 'Shop Rent', 50000);
+INSERT INTO expense_list (expense_code, type_name, default_amount) VALUES ('ELEC', 'Electricity Bill', 5000);
+
+-- 10. DAMAGE
+INSERT INTO damage (damage_date, total_amount) VALUES (SYSDATE, 0);
+
+-- 11. SUB_CATEGORIES (Wait for Trigger to generate CAT IDs)
+INSERT INTO sub_categories (sub_cat_name, product_cat_id) 
+SELECT 'Gaming Laptops', product_cat_id FROM product_categories WHERE product_cat_name = 'Laptops';
+
+-- 12. PARTS
+INSERT INTO parts (parts_code, parts_name, price, parts_cat_id)
+SELECT 'S23-SCR', 'Galaxy S23 OLED Panel', 12000, parts_cat_id FROM parts_category WHERE parts_cat_code = 'SCR';
+
+-- 13. PRODUCTS
+INSERT INTO products (product_code, product_name, supplier_id, category_id, brand_id, purchase_price, mrp)
+SELECT 'HP-PV15', 'HP Pavilion 15 Laptop', 
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Global Tech Dist.'),
+(SELECT product_cat_id FROM product_categories WHERE product_cat_name = 'Laptops'),
+(SELECT brand_id FROM brand WHERE brand_name = 'HP'),
+45000, 52000 FROM DUAL;
+
+-- 14. EXPENSE_MASTER
+INSERT INTO expense_master (expense_code, expense_date, expense_type_id, total_amount)
+SELECT 'EXP-DEC-01', SYSDATE, expense_type_id, 50000 FROM expense_list WHERE expense_code = 'RENT';
+
+-- 15. PAYMENTS
+INSERT INTO payments (payment_date, amount, payment_type, supplier_id)
+SELECT SYSDATE, 10000, 'Cash', supplier_id FROM suppliers WHERE supplier_name = 'Global Tech Dist.';
+
+-- 16. DEPARTMENTS
+INSERT INTO departments (department_name, company_id)
+SELECT 'Sales & Marketing', company_id FROM company WHERE company_name = 'Tech Nova Electronics';
+
+-- 17. EMPLOYEES
+INSERT INTO employees (first_name, last_name, email, job_id, department_id)
+SELECT 'Kamal', 'Hossain', 'kamal@technova.com',
+(SELECT job_id FROM jobs WHERE job_code = 'SLS'),
+(SELECT department_id FROM departments WHERE department_name = 'Sales & Marketing') FROM DUAL;
+
+-- 18. COM_USERS
+INSERT INTO com_users (user_name, password, role, employee_id)
+SELECT 'kamal_sales', 'password123', 'user', employee_id FROM employees WHERE email = 'kamal@technova.com';
+
+-- 19. SERVICE_MASTER
+INSERT INTO service_master (customer_phone, servicelist_id, service_by, service_charge)
+SELECT '01811000001', 
+(SELECT servicelist_id FROM service_list WHERE service_name = 'Display Repair'),
+(SELECT employee_id FROM employees WHERE first_name = 'Kamal'), 1500 FROM DUAL;
+
+-- 20. SERVICE_DETAILS
+INSERT INTO service_details (service_id, parts_id, price)
+SELECT (SELECT MAX(service_id) FROM service_master), 
+(SELECT parts_id FROM parts WHERE parts_code = 'S23-SCR'), 12000 FROM DUAL;
+
+-- 21. SALES_MASTER
+INSERT INTO sales_master (customer_phone, sales_by, payment_type, total_amount)
+SELECT '01911000002', (SELECT employee_id FROM employees WHERE first_name = 'Kamal'), 'Card', 52000 FROM DUAL;
+
+-- 22. SALES_DETAIL
+INSERT INTO sales_detail (invoice_id, product_id, unit_price, quantity)
+SELECT (SELECT MAX(invoice_id) FROM sales_master), 
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 52000, 1 FROM DUAL;
+
+-- 23. STOCK
+INSERT INTO stock (product_id, supplier_id, quantity)
+SELECT (SELECT product_id FROM products WHERE product_code = 'HP-PV15'),
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Global Tech Dist.'), 10 FROM DUAL;
+
+-- 24. SALES_RETURN_MASTER
+INSERT INTO sales_return_master (invoice_id, customer_phone, total_amount)
+SELECT (SELECT MAX(invoice_id) FROM sales_master), '01911000002', 52000 FROM DUAL;
+
+-- 25. SALES_RETURN_DETAILS
+INSERT INTO sales_return_details (sales_return_id, product_id, unit_price, qty_return, reason)
+SELECT (SELECT MAX(sales_return_id) FROM sales_return_master),
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 52000, 1, 'Defective' FROM DUAL;
+
+-- 26. PRODUCT_ORDER_MASTER
+INSERT INTO product_order_master (supplier_id, total_amount)
+SELECT supplier_id, 90000 FROM suppliers WHERE supplier_name = 'Global Tech Dist.';
+
+-- 27. PRODUCT_ORDER_DETAIL
+INSERT INTO product_order_detail (order_id, product_id, unit_price, quantity)
+SELECT (SELECT MAX(order_id) FROM product_order_master),
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 45000, 2 FROM DUAL;
+
+-- 28. PRODUCT_RECEIVE_MASTER
+INSERT INTO product_receive_master (order_id, supplier_id, total_amount)
+SELECT (SELECT MAX(order_id) FROM product_order_master),
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Global Tech Dist.'), 90000 FROM DUAL;
+
+-- 29. PRODUCT_RECEIVE_DETAILS
+INSERT INTO product_receive_details (receive_id, product_id, unit_price, receive_quantity)
+SELECT (SELECT MAX(receive_id) FROM product_receive_master),
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 45000, 2 FROM DUAL;
+
+-- 30. PRODUCT_RETURN_MASTER
+INSERT INTO product_return_master (supplier_id, total_amount)
+SELECT supplier_id, 45000 FROM suppliers WHERE supplier_name = 'Global Tech Dist.';
+
+-- 31. PRODUCT_RETURN_DETAILS
+INSERT INTO product_return_details (return_id, product_id, unit_price, return_quality, reason)
+SELECT (SELECT MAX(return_id) FROM product_return_master),
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 45000, 'Poor', 'Wrong Model' FROM DUAL;
+
+-- 32. EXPENSE_DETAILS
+INSERT INTO expense_details (expense_id, expense_type_id, description, amount, quantity)
+SELECT (SELECT MAX(expense_id) FROM expense_master),
+(SELECT expense_type_id FROM expense_list WHERE expense_code = 'RENT'),
+'Main Shop Dec Rent', 50000, 1 FROM DUAL;
+
+-- 33. DAMAGE_DETAIL
+INSERT INTO damage_detail (damage_id, product_id, unit_price, damage_quantity, reason)
+SELECT (SELECT MAX(damage_id) FROM damage),
+(SELECT product_id FROM products WHERE product_code = 'HP-PV15'), 45000, 1, 'Water Damage' FROM DUAL;
+
+COMMIT;
+
+--------------------------------------------------------------------------------
+-- ADDITIONAL SAMPLE DATA (BATCH 2: ELECTRONICS EXPANSION)
+--------------------------------------------------------------------------------
+
+-- 01. COMPANY (Only 1 exists, no change needed)
+
+-- 02. JOBS (Adding 2 more roles)
+INSERT INTO jobs (job_code, job_title, job_grade, min_salary, max_salary) VALUES ('ACC', 'Accountant', 'A', 35000, 55000);
+INSERT INTO jobs (job_code, job_title, job_grade, min_salary, max_salary) VALUES ('DEL', 'Delivery Agent', 'C', 15000, 22000);
+
+-- 03. CUSTOMERS (10 New Records)
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000010', 'Tanvir Hasan', 'tanvir@gmail.com', 'Dhaka');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000011', 'Mehedi Azad', 'mehedi@gmail.com', 'Sylhet');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000012', 'Nusrat Jahan', 'nusrat@gmail.com', 'Khulna');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000013', 'Sabbir Ahmed', 'sabbir@gmail.com', 'Dhaka');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000014', 'Farhana Islam', 'farhana@gmail.com', 'Rajshahi');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000015', 'Riaz Uddin', 'riaz@gmail.com', 'Barisal');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000016', 'Khadija Begum', 'khadija@gmail.com', 'Dhaka');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000017', 'Imran Khan', 'imran@gmail.com', 'Comilla');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000018', 'Sumaiya Akter', 'sumi@gmail.com', 'Dhaka');
+INSERT INTO customers (phone_no, customer_name, email, city) VALUES ('01711000019', 'Zahid Hasan', 'zahid@gmail.com', 'Gazipur');
+
+-- 05. PRODUCT_CATEGORIES (Adding more variety)
+INSERT INTO product_categories (product_cat_name) VALUES ('Televisions');
+INSERT INTO product_categories (product_cat_name) VALUES ('Accessories');
+
+-- 06. BRAND (Adding major electronics brands)
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('Sony', 'Bravia XR', '55 inch', 'Black');
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('Apple', 'iPhone 15 Pro', '6.1 inch', 'Titanium');
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('Dell', 'XPS 13', '13.4 inch', 'Silver');
+INSERT INTO brand (brand_name, model_name, brand_size, color) VALUES ('Logitech', 'MX Master 3S', 'N/A', 'Graphite');
+
+-- 07. SUPPLIERS (Adding more sources)
+INSERT INTO suppliers (supplier_name, phone_no, email, contact_person) VALUES ('Excel Technologies', '01999888777', 'info@excel.com', 'Mr. Salam');
+INSERT INTO suppliers (supplier_name, phone_no, email, contact_person) VALUES ('Smart Technologies', '01888777666', 'sales@smart-bd.com', 'Mr. Karim');
+
+-- 11. SUB_CATEGORIES
+INSERT INTO sub_categories (sub_cat_name, product_cat_id) 
+SELECT 'Smart TVs', product_cat_id FROM product_categories WHERE product_cat_name = 'Televisions';
+INSERT INTO sub_categories (sub_cat_name, product_cat_id) 
+SELECT 'Wireless Mice', product_cat_id FROM product_categories WHERE product_cat_name = 'Accessories';
+
+-- 13. PRODUCTS (10 New Records)
+INSERT INTO products (product_code, product_name, supplier_id, category_id, brand_id, purchase_price, mrp)
+SELECT 'SONY-TV55', 'Sony Bravia 55" 4K', 
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Excel Technologies'),
+(SELECT product_cat_id FROM product_categories WHERE product_cat_name = 'Televisions'),
+(SELECT brand_id FROM brand WHERE brand_name = 'Sony'), 85000, 95000 FROM DUAL;
+
+INSERT INTO products (product_code, product_name, supplier_id, category_id, brand_id, purchase_price, mrp)
+SELECT 'IP15-PRO', 'Apple iPhone 15 Pro', 
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Smart Technologies'),
+(SELECT product_cat_id FROM product_categories WHERE product_cat_name = 'Smartphones'),
+(SELECT brand_id FROM brand WHERE brand_name = 'Apple'), 145000, 160000 FROM DUAL;
+
+INSERT INTO products (product_code, product_name, supplier_id, category_id, brand_id, purchase_price, mrp)
+SELECT 'DELL-XPS13', 'Dell XPS 13 Laptop', 
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Excel Technologies'),
+(SELECT product_cat_id FROM product_categories WHERE product_cat_name = 'Laptops'),
+(SELECT brand_id FROM brand WHERE brand_name = 'Dell'), 120000, 135000 FROM DUAL;
+
+INSERT INTO products (product_code, product_name, supplier_id, category_id, brand_id, purchase_price, mrp)
+SELECT 'LOGI-MX3S', 'Logitech MX Master 3S', 
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Smart Technologies'),
+(SELECT product_cat_id FROM product_categories WHERE product_cat_name = 'Accessories'),
+(SELECT brand_id FROM brand WHERE brand_name = 'Logitech'), 8500, 10500 FROM DUAL;
+
+-- 16. DEPARTMENTS
+INSERT INTO departments (department_name, company_id)
+SELECT 'Accounts & Finance', company_id FROM company WHERE company_name = 'Tech Nova Electronics';
+INSERT INTO departments (department_name, company_id)
+SELECT 'Technical Support', company_id FROM company WHERE company_name = 'Tech Nova Electronics';
+
+-- 17. EMPLOYEES (10 New Staff)
+INSERT INTO employees (first_name, last_name, email, job_id, department_id)
+SELECT 'Rahim', 'Uddin', 'rahim@technova.com',
+(SELECT job_id FROM jobs WHERE job_code = 'ACC'),
+(SELECT department_id FROM departments WHERE department_name = 'Accounts & Finance') FROM DUAL;
+
+INSERT INTO employees (first_name, last_name, email, job_id, department_id)
+SELECT 'Selina', 'Begum', 'selina@technova.com',
+(SELECT job_id FROM jobs WHERE job_code = 'TEC'),
+(SELECT department_id FROM departments WHERE department_name = 'Technical Support') FROM DUAL;
+
+-- 21. SALES_MASTER (Linking to new customers/employees)
+INSERT INTO sales_master (customer_phone, sales_by, payment_type, total_amount)
+SELECT '01711000010', (SELECT employee_id FROM employees WHERE first_name = 'Kamal'), 'Cash', 95000 FROM DUAL;
+
+INSERT INTO sales_master (customer_phone, sales_by, payment_type, total_amount)
+SELECT '01711000011', (SELECT employee_id FROM employees WHERE first_name = 'Kamal'), 'Card', 160000 FROM DUAL;
+
+-- 22. SALES_DETAIL (Detailing the sales above)
+INSERT INTO sales_detail (invoice_id, product_id, unit_price, quantity)
+SELECT (SELECT invoice_id FROM (SELECT invoice_id FROM sales_master ORDER BY cre_dt DESC) WHERE ROWNUM = 1), 
+(SELECT product_id FROM products WHERE product_code = 'SONY-TV55'), 95000, 1 FROM DUAL;
+
+-- 23. STOCK (Initializing stock for new products)
+INSERT INTO stock (product_id, supplier_id, quantity)
+SELECT (SELECT product_id FROM products WHERE product_code = 'SONY-TV55'),
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Excel Technologies'), 5 FROM DUAL;
+
+INSERT INTO stock (product_id, supplier_id, quantity)
+SELECT (SELECT product_id FROM products WHERE product_code = 'IP15-PRO'),
+(SELECT supplier_id FROM suppliers WHERE supplier_name = 'Smart Technologies'), 15 FROM DUAL;
+
+-- 26. PRODUCT_ORDER_MASTER
+INSERT INTO product_order_master (supplier_id, total_amount)
+SELECT supplier_id, 500000 FROM suppliers WHERE supplier_name = 'Smart Technologies';
+
+-- 27. PRODUCT_ORDER_DETAIL
+INSERT INTO product_order_detail (order_id, product_id, unit_price, quantity)
+SELECT (SELECT MAX(order_id) FROM product_order_master),
+(SELECT product_id FROM products WHERE product_code = 'IP15-PRO'), 145000, 3 FROM DUAL;
+
+-- 32. EXPENSE_DETAILS
+INSERT INTO expense_details (expense_id, expense_type_id, description, amount, quantity)
+SELECT (SELECT MAX(expense_id) FROM expense_master),
+(SELECT expense_type_id FROM expense_list WHERE expense_code = 'ELEC'),
+'December Electric Bill', 4500, 1 FROM DUAL;
+
+COMMIT;
